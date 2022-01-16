@@ -136,10 +136,9 @@ class main:
                 (len(replySplit) == 2 or len(replySplit) == 3)):
 
                 if reply.id not in self.doneReplies:
-
+                    self.doneReplies.append(reply.id)
+                    
                     if reply.author_id not in self.peopleWhoGuessed:
-
-                        self.doneReplies.append(reply.id)
 
                         #Making sure that the word is the right length
                         if len(replySplit[-1]) != 5:
