@@ -1,4 +1,4 @@
-#11/01/2022
+#17/01/2022
 #Chico Demmenie
 #Wordl_Bot/main.py
 
@@ -30,7 +30,6 @@ class main:
         self.peopleWhoGuessed = []
         self.day = self.keys["thisDay"]
         self.authTime = None
-        self.thisTweetTime = time.time() - 80000
 
         self.mainLoop()
 
@@ -45,31 +44,31 @@ class main:
             self.wordlAnswer = False
             self.makeWordl
 
-            #if (time.time() - 86400) > self.thisTweetTime:
-            self.makeWordl()
-            while self.wordlAnswer == False:
-                #Checking if we need a new authentication and requesting.
-                if (self.authTime == None or
-                    (self.authTime + 7100) < time.time()):
+            if (time.time() - 86400) > self.thisTweetTime:
+                self.makeWordl()
+                while self.wordlAnswer == False:
+                    #Checking if we need a new authentication and requesting.
+                    if (self.authTime == None or
+                        (self.authTime + 7100) < time.time()):
 
-                    self.api = tweepy.Client(
-                        bearer_token=self.keys["bearerToken"],
-                        consumer_key=self.keys["apiKey"],
-                        consumer_secret=self.keys["apiSecret"],
-                        access_token=self.keys["accessToken"],
-                        access_token_secret=self.keys["accessSecret"],
-                        wait_on_rate_limit=True
-                        )
+                        self.api = tweepy.Client(
+                            bearer_token=self.keys["bearerToken"],
+                            consumer_key=self.keys["apiKey"],
+                            consumer_secret=self.keys["apiSecret"],
+                            access_token=self.keys["accessToken"],
+                            access_token_secret=self.keys["accessSecret"],
+                            wait_on_rate_limit=True
+                            )
 
-                #Calling the necessary functions
-                self.replyList = self.getReplies()
-                self.analyseReplies()
+                    #Calling the necessary functions
+                    self.replyList = self.getReplies()
+                    self.analyseReplies()
 
-                #if (time.time() - 86400) > self.thisTweetTime:
-                    #self.reset()
-                    #break
+                    if (time.time() - 86400) > self.thisTweetTime:
+                        self.reset()
+                        break
 
-                time.sleep(6)
+                    time.sleep(6)
 
 
     #---------------------------------------------------------------------------
@@ -93,8 +92,8 @@ class main:
         tweet = ''.join(("Wordl ", str(self.day),
             "\n\U00002B1B\U00002B1B\U00002B1B\U00002B1B\U00002B1B"))
 
-        #self.api.create_tweet(text=tweet)
-        #self.thisTweetTime = int(time.time())
+        self.api.create_tweet(text=tweet)
+        self.thisTweetTime = int(time.time())
 
         print(f"Wordl {self.day}: {self.thisWordl[0]} - time: {time.time()}")
 
@@ -108,7 +107,7 @@ class main:
             print("Getting replies...")
             replies = self.api.search_recent_tweets(query="to:BotWordl",
                 max_results=100,
-                #start_time=datetime.fromtimestamp(self.thisTweetTime),
+                start_time=datetime.fromtimestamp(self.thisTweetTime),
                 expansions='author_id')
 
         except Exception as e:
@@ -137,7 +136,7 @@ class main:
 
                 if reply.id not in self.doneReplies:
                     self.doneReplies.append(reply.id)
-                    
+
                     if reply.author_id not in self.peopleWhoGuessed:
 
                         #Making sure that the word is the right length
